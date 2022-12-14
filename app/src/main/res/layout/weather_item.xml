@@ -14,8 +14,10 @@
         android:layout_gravity="center"
         >
 
+
+
     <TextView
-        android:id="@+id/city"
+        android:id="@+id/part"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -25,8 +27,20 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
+        <TextView
+            android:id="@+id/condition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toEndOf="@+id/part"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/feelsLike"
+            />
+
     <TextView
-        android:id="@+id/temperature"
+        android:id="@+id/feelsLike"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
