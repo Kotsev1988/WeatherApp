@@ -4,25 +4,30 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weatherapp.model.RepositoryImpl
-import com.example.weatherapp.model.Repositoty
+import com.example.weatherapp.model.*
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
 
-    private val repository: Repositoty = RepositoryImpl()
+    private val repository: Repository = RepositoryImpl()
     private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData()
 
     fun getLiveData(): LiveData<AppState> = liveDataToObserve
 
-    suspend fun getWeather() = getDataFromService()
+    suspend fun getWeather(city: String, isRus: Boolean) = getDataFromService(city, isRus)
 
-    private suspend fun getDataFromService() {
+    private suspend fun getDataFromService(city: String, isRus: Boolean) {
 
         viewModelScope.launch {
-            val weather = repository.getWeatherFromServer()
+            val weather = repository.getWeatherFromServer(city)
             if (weather.isSuccessful) {
-                liveDataToObserve.value = AppState.Success(weather = weather.body()!!)
+                if (isRus) {
+                    liveDataToObserve.value =
+                        AppState.Success(weather = weather.body()!!, getRussianCities())
+                } else {
+                    liveDataToObserve.value =
+                        AppState.Success(weather = weather.body()!!, getWorldCities())
+                }
             } else {
                 liveDataToObserve.value = AppState.Error(error = weather.message())
             }

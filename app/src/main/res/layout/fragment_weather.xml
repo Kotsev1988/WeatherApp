@@ -16,72 +16,71 @@
         tools:context=".ui.WeatherFragment">
 
 
-        <TextView
-            android:id="@+id/cityName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/marginTop"
-            android:layout_marginBottom="@dimen/marginBottom"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textSize"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/currentTemperature"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/marginBottom"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textSize"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cityName" />
-
-
-        <TextView
-            android:id="@+id/humidity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/marginBottom"
-            android:textColor="@color/black"
-            android:textSize="@dimen/textSize"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/currentTemperature" />
-
-        <ImageView
-            android:id="@+id/weatherIcon"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="@dimen/marginTop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/humidity" />
-
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/WeatherRecycler"
+        <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/marginSize"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="@dimen/textSize"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/weatherHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/viewHeight"
+                app:layout_constraintBottom_toTopOf="@+id/WeatherRecycler"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/weatherHorizontal" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/WeatherRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/weatherHorizontal" />
+
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/mainFragmentFAB"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/weatherIcon" />
+            android:layout_marginEnd="@dimen/marginSize"
+            android:layout_marginBottom="@dimen/marginSize"
+            android:src="@drawable/ic_change"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <FrameLayout
             android:id="@+id/cityTemp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

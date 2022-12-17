@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.R
-import com.example.weatherapp.data.ServiceApi
+import com.example.weatherapp.model.Cities
+import com.google.android.material.button.MaterialButton
 
-class WeatherRecyclerAdapter(private val listCity: ArrayList<String>) :
+class WeatherRecyclerAdapter(private var onItemClickListener: WeatherFragment.OnItemClickListener?) :
     RecyclerView.Adapter<WeatherRecyclerAdapter.ViewHolder>() {
-    private val service = ServiceApi.getInstance()
+    private var listCity: List<Cities> = listOf()
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.weather_item, parent, false)
@@ -23,11 +25,28 @@ class WeatherRecyclerAdapter(private val listCity: ArrayList<String>) :
 
     override fun getItemCount(): Int = listCity.size
 
+    fun removeListener() {
+        onItemClickListener = null
+    }
+
+    fun setData(data: List<Cities>) {
+        listCity = data
+        notifyDataSetChanged()
+    }
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val partWeather: TextView = itemView.findViewById(R.id.part)
-        private val feelsLike: TextView = itemView.findViewById(R.id.feelsLike)
+        private val name: TextView = itemView.findViewById(R.id.name)
+        private val temp: TextView = itemView.findViewById(R.id.temp)
         private val condition: TextView = itemView.findViewById(R.id.condition)
-        fun bind(part: String) {
+        private val details: MaterialButton = itemView.findViewById(R.id.details)
+
+        fun bind(city: Cities) {
+
+            name.text = city.cityName
+
+            details.setOnClickListener {
+                onItemClickListener?.onItemClick(cities = city)
+            }
 
         }
     }
