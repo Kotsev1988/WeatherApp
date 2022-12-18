@@ -28,7 +28,9 @@ class MainViewModel : ViewModel() {
                     liveDataToObserve.value =
                         AppState.Success(weather = weather.body()!!, getWorldCities())
                 }
-            } else {
+            }
+            else
+            {
                 liveDataToObserve.value = AppState.Error(error = weather.message())
             }
         }

@@ -64,6 +64,8 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
                 binding.cityLoading.visibility = View.GONE
                 binding.nameOfCity.text = weather.location.name
                 binding.temperatureInCity.text = weather.current.temp_c.toString()
+                binding.feeling.text = weather.current.feelslike_c.toString()
+                binding.humidity.text = weather.current.humidity.toString()
             }
             is AppState.Loading -> {
                 binding.cityLoading.visibility = View.VISIBLE

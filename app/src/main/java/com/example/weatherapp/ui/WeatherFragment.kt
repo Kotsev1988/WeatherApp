@@ -7,10 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentWeatherBinding
-import com.example.weatherapp.model.Cities
-import com.example.weatherapp.model.Weather
-import com.example.weatherapp.model.getRussianCities
-import com.example.weatherapp.model.getWorldCities
+import com.example.weatherapp.model.*
 import com.example.weatherapp.ui.viewmodel.AppState
 import com.example.weatherapp.ui.viewmodel.MainViewModel
 import com.example.weatherapp.ui.viewmodel.WeatherHorizontalDay
@@ -45,13 +42,13 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
     private var isRussianCities: Boolean = true
     private var getCities: List<Cities> = getRussianCities()
 
-
     interface OnItemClickListener {
         fun onItemClick(cities: Cities)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

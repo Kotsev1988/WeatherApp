@@ -20,4 +20,8 @@ class RepositoryImpl : Repository {
     override fun getWorldCities(): List<Cities> {
        return getWorldCities()
     }
+
+    override fun getOne(): Int {
+        return 1
+    }
 }

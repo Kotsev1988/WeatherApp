@@ -8,4 +8,5 @@ interface Repository {
     fun getWeatherFromLocal(): Weather
     fun getRussianCities(): List<Cities>
     fun getWorldCities(): List<Cities>
+    fun getOne(): Int
 }
