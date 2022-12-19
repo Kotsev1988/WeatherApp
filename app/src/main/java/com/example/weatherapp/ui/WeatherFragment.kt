@@ -15,25 +15,24 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_weather.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class WeatherFragment : Fragment(R.layout.fragment_weather) {
     private var _binding: FragmentWeatherBinding? = null
-    private lateinit var viewModel: MainViewModel
 
     private val adapter = WeatherRecyclerAdapter(object : OnItemClickListener {
         override fun onItemClick(cities: Cities) {
-            val manager = activity?.supportFragmentManager
-            if (manager != null) {
+
+            activity?.supportFragmentManager?.apply {
                 val bundle = Bundle()
                 bundle.putParcelable(CityWeather.BUNDLE_EXTRA, cities)
-                manager.beginTransaction()
+                beginTransaction()
                     .add(R.id.container, CityWeather.newInstance(bundle))
                     .addToBackStack("")
                     .commitAllowingStateLoss()
             }
         }
-
     })
     private val adapterOfDay = WeatherHorizontalDay(this)
     private val binding
@@ -41,6 +40,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
 
     private var isRussianCities: Boolean = true
     private var getCities: List<Cities> = getRussianCities()
+    private val viewModel: MainViewModel by lazy { ViewModelProvider(this)[MainViewModel::class.java] }
 
     interface OnItemClickListener {
         fun onItemClick(cities: Cities)
@@ -60,7 +60,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
 
         WeatherRecycler.adapter = adapter
         weatherHorizontal.adapter = adapterOfDay
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
         viewModel.getLiveData().observe(viewLifecycleOwner, Observer {
             getAppState(it)
         })
@@ -73,15 +73,13 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
         isRussianCities = !isRussianCities
         if (isRussianCities) {
             getCities = getRussianCities()
-
         } else {
             getCities = getWorldCities()
+        }.also {
+            CoroutineScope(Dispatchers.IO).launch {
+                viewModel.getWeather(getCities[0].cityName, isRussianCities)
+            }
         }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            viewModel.getWeather(getCities[0].cityName, isRussianCities)
-        }
-
     }
 
     private fun getAppState(it: AppState) {
@@ -94,10 +92,8 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
                 val weather = it.weather
                 val cities = it.cities
                 binding.city.text = cities.get(0).cityName
-                adapter.setData(cities)
-                println("CITYWEATHER "+weather.location.name)
-                println("CITYWEATHER "+cities)
 
+                adapter.setData(cities)
                 adapterOfDay.setData(weather.forecast.forecastday.get(0).hour)
 
             }
@@ -107,7 +103,17 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
             is AppState.Error -> {
                 binding.frameLoading.visibility = View.GONE
                 val error = it.error
-                Snackbar.make(binding.mainView, error, Snackbar.LENGTH_SHORT).show()
+
+                binding.mainView.showSnackBar(
+                    error,
+                    getString(R.string.reload),
+
+                    {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            viewModel.getWeather(getCities[0].cityName, isRussianCities)
+                        }
+                    }
+                )
             }
         }
     }
@@ -116,4 +122,16 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
         adapter.removeListener()
         super.onDestroy()
     }
+
+    private fun View.showSnackBar(
+        text: String,
+        actionText: String,
+        action: (View) -> Unit,
+        length: Int = Snackbar.LENGTH_INDEFINITE,
+    ) {
+        Snackbar.make(this, text, length).setAction(actionText, action).show()
+    }
+
 }
+
+

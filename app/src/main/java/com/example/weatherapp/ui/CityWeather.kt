@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.R
@@ -13,17 +14,18 @@ import com.example.weatherapp.model.Cities
 import com.example.weatherapp.ui.viewmodel.AppState
 import com.example.weatherapp.ui.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_city_weather.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
 class CityWeather : Fragment(R.layout.fragment_city_weather) {
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by lazy { ViewModelProvider(this)[MainViewModel::class.java] }
     private var _binding: FragmentCityWeatherBinding? = null
     private val binding
         get() = _binding!!
-    private var cityName: String = ""
+    private var city: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,38 +43,43 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentCityWeatherBinding.bind(view)
-        val weather = arguments?.getParcelable<Cities>(BUNDLE_EXTRA)
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        viewModel.getLiveData().observe(viewLifecycleOwner, Observer {
-            getData(it)
-        })
 
-        if (weather != null) {
-
-            cityName = weather.cityName
+        arguments?.getParcelable<Cities>(BUNDLE_EXTRA).let {weather ->
+            city = weather?.cityName.toString()
+        }.also {
             CoroutineScope(Dispatchers.IO).launch {
-                viewModel.getWeather(cityName, false)
+                viewModel.getWeather(city, false)
             }
+        }?: kotlin.run {
+            Toast.makeText(requireContext(), "No Any Parcelable", Toast.LENGTH_SHORT)
         }
+
+        viewModel.getLiveData().observe(viewLifecycleOwner, Observer {appSate ->
+            getData(appSate)
+        })
     }
 
-    fun getData(it: AppState) {
+    fun getData(appSate: AppState) {
 
-        when (it) {
+        when (appSate) {
             is AppState.Success -> {
-                val weather = it.weather
                 binding.cityLoading.visibility = View.GONE
-                binding.nameOfCity.text = weather.location.name
-                binding.temperatureInCity.text = weather.current.temp_c.toString()
-                binding.feeling.text = weather.current.feelslike_c.toString()
-                binding.humidity.text = weather.current.humidity.toString()
+                appSate.weather.let { weather ->
+
+                    weather.current.also {
+                       binding.temperatureInCity.text = it.temp_c.toString()
+                       binding.feeling.text = it.feelslike_c.toString()
+                       binding.humidity.text = it.humidity.toString()
+                   }
+                   binding.nameOfCity.text =  weather.location?.name
+               }
             }
             is AppState.Loading -> {
                 binding.cityLoading.visibility = View.VISIBLE
             }
             is AppState.Error -> {
                 binding.cityLoading.visibility = View.GONE
-                val error = it.error
+                val error = appSate.error
                 Snackbar.make(binding.cityView, error, Snackbar.LENGTH_SHORT).show()
             }
         }

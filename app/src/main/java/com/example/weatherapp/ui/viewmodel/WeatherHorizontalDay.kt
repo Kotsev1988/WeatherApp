@@ -10,10 +10,15 @@ import com.bumptech.glide.Glide
 import com.example.weatherapp.R
 import com.example.weatherapp.model.Hour
 import com.example.weatherapp.ui.WeatherFragment
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.*
 
 class WeatherHorizontalDay(val context: WeatherFragment) : RecyclerView.Adapter<WeatherHorizontalDay.ViewHolder>() {
 
     private var weatherOfDay: List<Hour> = listOf()
+
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -36,12 +41,17 @@ class WeatherHorizontalDay(val context: WeatherFragment) : RecyclerView.Adapter<
 
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        private val DATE_TIME_fORMAT = "yyyy-MM-dd HH:mm"
+        private val DATE_TIME_fORMAT_HOUR = "HH:mm"
+
         private val hour: TextView = itemView.findViewById(R.id.hour)
         private val tempC: TextView = itemView.findViewById(R.id.tempInC)
         private val conditionItem: TextView = itemView.findViewById(R.id.conditionItem)
         private val tempIcon: ImageView = itemView.findViewById(R.id.tempIcon)
         fun bind(weather: Hour) {
-            hour.text = weather.time
+
+            hour.text = Date().parse(weather.time)?.format()
             tempC.text = weather.temp_c.toString()
 
             conditionItem.text = weather.condition.text
@@ -51,5 +61,14 @@ class WeatherHorizontalDay(val context: WeatherFragment) : RecyclerView.Adapter<
                 .fitCenter()
                 .into(tempIcon)
         }
+
+        private fun Date.parse(time: String): Date?=
+            SimpleDateFormat(DATE_TIME_fORMAT, Locale.getDefault()).parse(time)
+
+        private fun Date.format(): String=
+            SimpleDateFormat(DATE_TIME_fORMAT_HOUR, Locale.getDefault()).format(this)
     }
+
+
+
 }

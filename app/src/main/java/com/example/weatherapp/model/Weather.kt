@@ -9,3 +9,4 @@ data class Weather(
     val forecast: Forecast,
     val location: Location
 ): Parcelable
+

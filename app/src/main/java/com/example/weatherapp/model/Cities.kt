@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Cities(val cityName: String) : Parcelable
+data class Cities(val cityName: String):Parcelable
 
 fun getRussianCities(): List<Cities> {
     return listOf(
