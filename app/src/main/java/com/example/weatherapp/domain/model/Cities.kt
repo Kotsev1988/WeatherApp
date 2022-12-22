@@ -1,10 +1,12 @@
-package com.example.weatherapp.model
+package com.example.weatherapp.domain.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Cities(val cityName: String):Parcelable
+
+
 
 fun getRussianCities(): List<Cities> {
     return listOf(
@@ -25,3 +27,5 @@ fun getWorldCities(): List<Cities> {
         Cities("Рим")
     )
 }
+
+
