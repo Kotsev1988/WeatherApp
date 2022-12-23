@@ -38,4 +38,4 @@ data class Hour(
     val wind_mph: Double,
     val windchill_c: Double,
     val windchill_f: Double
-): Parcelable
+) : Parcelable

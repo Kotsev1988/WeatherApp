@@ -8,8 +8,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentWeatherBinding
 import com.example.weatherapp.domain.model.Cities
-import com.example.weatherapp.domain.model.getRussianCities
-import com.example.weatherapp.domain.model.getWorldCities
 import com.example.weatherapp.ui.viewmodel.AppState
 import com.example.weatherapp.ui.viewmodel.MainViewModel
 import com.example.weatherapp.ui.adapters.WeatherHorizontalDay
@@ -41,9 +39,9 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
     private val binding
         get() = _binding!!
 
-    private var isRussianCities: Boolean = true
+    private var isRussianCities : Boolean = true
 
-    private val viewModel: MainViewModel by lazy {
+    private val viewModel : MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
 
@@ -77,16 +75,10 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
     }
 
     private suspend fun changeWeatherData() {
+
         isRussianCities = !isRussianCities
-        if (isRussianCities) {
-            viewModel.getWeather(isRussianCities)
-        } else {
-            viewModel.getWeather(isRussianCities)
-        }.also {
-            CoroutineScope(Dispatchers.IO).launch {
-                viewModel.getWeather(isRussianCities)
-            }
-        }
+        viewModel.getWeather(isRussianCities)
+
     }
 
     private fun getAppState(it: AppState) {
@@ -101,13 +93,15 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
                 binding.city.text = cities.get(0).cityName
 
                 adapter.setData(cities)
-                weather?.forecast?.forecastday?.get(0)?.hour?.let { it1 -> adapterOfDay.setData(it1) }
+                weather?.forecast?.forecastday?.get(0)?.hour?.let {
+                        it1 -> adapterOfDay.setData(it1)
+                }
             }
 
             is AppState.Loading -> {
                 binding.frameLoading.visibility = View.VISIBLE
             }
-            
+
             is AppState.Error -> {
                 binding.frameLoading.visibility = View.GONE
                 val error = it.error
@@ -140,5 +134,3 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
         Snackbar.make(this, text, length).setAction(actionText, action).show()
     }
 }
-
-

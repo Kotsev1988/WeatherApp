@@ -10,14 +10,14 @@ import com.example.weatherapp.domain.model.getRussianCities
 import com.example.weatherapp.domain.model.getWorldCities
 import kotlinx.coroutines.launch
 
-class ViewModelCity: ViewModel() {
+class ViewModelCity : ViewModel() {
 
-    private val repository: Repository = RepositoryImpl()
-    private val liveDataToObserve: MutableLiveData<AppStateForCity> = MutableLiveData()
+    private val repository : Repository = RepositoryImpl()
+    private val liveDataToObserve : MutableLiveData<AppStateForCity> = MutableLiveData()
 
-    fun getLiveData(): LiveData<AppStateForCity> = liveDataToObserve
+    fun getLiveData() : LiveData<AppStateForCity> = liveDataToObserve
 
-    suspend fun getWeather(city: String) = getDataFromService(city)
+    suspend fun getWeather(city : String) = getDataFromService(city)
 
     private suspend fun getDataFromService(city: String) {
 

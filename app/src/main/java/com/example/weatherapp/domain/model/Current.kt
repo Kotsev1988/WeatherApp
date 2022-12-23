@@ -28,4 +28,4 @@ data class Current(
     val wind_dir: String,
     val wind_kph: Double,
     val wind_mph: Double
-): Parcelable
+) : Parcelable

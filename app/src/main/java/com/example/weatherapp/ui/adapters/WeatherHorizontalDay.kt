@@ -13,17 +13,18 @@ import com.example.weatherapp.ui.WeatherFragment
 import java.text.SimpleDateFormat
 import java.util.*
 
-class WeatherHorizontalDay(val context: WeatherFragment) : RecyclerView.Adapter<WeatherHorizontalDay.ViewHolder>() {
+class WeatherHorizontalDay(val context: WeatherFragment) :
+    RecyclerView.Adapter<WeatherHorizontalDay.ViewHolder>() {
 
     private var weatherOfDay: List<Hour> = listOf()
-
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
     ): ViewHolder {
         val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.weather_by_time, parent, false)
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.weather_by_time, parent, false)
         return ViewHolder(view)
     }
 
@@ -48,6 +49,7 @@ class WeatherHorizontalDay(val context: WeatherFragment) : RecyclerView.Adapter<
         private val tempC: TextView = itemView.findViewById(R.id.tempInC)
         private val conditionItem: TextView = itemView.findViewById(R.id.conditionItem)
         private val tempIcon: ImageView = itemView.findViewById(R.id.tempIcon)
+
         fun bind(weather: Hour) {
 
             hour.text = Date().parse(weather.time)?.format()
@@ -56,18 +58,15 @@ class WeatherHorizontalDay(val context: WeatherFragment) : RecyclerView.Adapter<
             conditionItem.text = weather.condition.text
             Glide.with(context).asBitmap()
                 .load("http://" + weather.condition.icon)
-                .override(600,200)
+                .override(600, 200)
                 .fitCenter()
                 .into(tempIcon)
         }
 
-        private fun Date.parse(time: String): Date?=
+        private fun Date.parse(time: String): Date? =
             SimpleDateFormat(DATE_TIME_fORMAT, Locale.getDefault()).parse(time)
 
-        private fun Date.format(): String=
+        private fun Date.format(): String =
             SimpleDateFormat(DATE_TIME_fORMAT_HOUR, Locale.getDefault()).format(this)
     }
-
-
-
 }

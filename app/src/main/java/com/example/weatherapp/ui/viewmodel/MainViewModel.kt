@@ -6,8 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.domain.Repository
 import com.example.weatherapp.data.RepositoryImpl
-import com.example.weatherapp.domain.model.getRussianCities
-import com.example.weatherapp.domain.model.getWorldCities
+import com.example.weatherapp.domain.model.Cities
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
@@ -20,29 +19,23 @@ class MainViewModel : ViewModel() {
     suspend fun getWeather(isRus: Boolean) = getDataFromService(isRus)
 
     private suspend fun getDataFromService(isRus: Boolean) {
-
+        var cities: List<Cities>
         viewModelScope.launch {
-            if (isRus) {
-                val cities = repository.getListOfRussianCities()
-                val weather = repository.getWeatherFromServer(cities[0].cityName)
-                if (weather.isSuccessful) {
-                    liveDataToObserve.value =
-                        AppState.Success(weather = weather.body(), repository.getListOfRussianCities())
-                } else {
-                    liveDataToObserve.value = AppState.Error(error = weather.message())
+            cities = when(isRus){
+                true -> {
+                    repository.getListOfRussianCities()
                 }
+                false -> {
+                    repository.getListOfWorldCities()
+                }
+            }
 
+            val weather = repository.getWeatherFromServer(cities[0].cityName)
+            if (weather.isSuccessful) {
+                liveDataToObserve.value =
+                    AppState.Success(weather = weather.body(), cities)
             } else {
-
-                val cities = repository.getListOfWorldCities()
-                val weather = repository.getWeatherFromServer(cities[0].cityName)
-                if (weather.isSuccessful) {
-                    liveDataToObserve.value =
-                        AppState.Success(weather = weather.body()!!, repository.getListOfWorldCities())
-                } else {
-                    liveDataToObserve.value = AppState.Error(error = weather.message())
-                }
-
+                liveDataToObserve.value = AppState.Error(error = weather.message())
             }
         }
     }

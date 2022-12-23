@@ -9,15 +9,15 @@ import retrofit2.Response
 
 class RepositoryImpl : Repository {
     private val service = RetrofitCleint.getInstance()
-    override suspend fun getWeatherFromServer(city: String): Response<Weather> = service.getWeather(city = city)
+    override suspend fun getWeatherFromServer(city: String) : Response<Weather> = service.getWeather(city = city)
 
 
-    override fun getWeatherFromLocal(): Weather {
+    override fun getWeatherFromLocal() : Weather {
         TODO("Not yet implemented")
     }
 
-    override fun getListOfRussianCities(): List<Cities> = getRussianCities()
+    override fun getListOfRussianCities() : List<Cities> = getRussianCities()
 
-    override fun getListOfWorldCities(): List<Cities> = getWorldCities()
+    override fun getListOfWorldCities() : List<Cities> = getWorldCities()
 
 }

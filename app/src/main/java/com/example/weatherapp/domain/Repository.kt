@@ -6,9 +6,9 @@ import com.example.weatherapp.domain.model.Weather
 import retrofit2.Response
 
 interface Repository {
-    suspend fun getWeatherFromServer(city: String): Response<Weather>
+    suspend fun getWeatherFromServer(city: String) : Response<Weather>
 
-    fun getWeatherFromLocal(): Weather
-    fun getListOfRussianCities(): List<Cities>
-    fun getListOfWorldCities(): List<Cities>
+    fun getWeatherFromLocal() : Weather
+    fun getListOfRussianCities() : List<Cities>
+    fun getListOfWorldCities() : List<Cities>
 }

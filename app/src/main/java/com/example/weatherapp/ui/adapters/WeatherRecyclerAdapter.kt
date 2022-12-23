@@ -16,7 +16,8 @@ class WeatherRecyclerAdapter(private var onItemClickListener: WeatherFragment.On
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.weather_item, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.weather_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -36,6 +37,7 @@ class WeatherRecyclerAdapter(private var onItemClickListener: WeatherFragment.On
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         private val name: TextView = itemView.findViewById(R.id.name)
         private val temp: TextView = itemView.findViewById(R.id.temp)
         private val condition: TextView = itemView.findViewById(R.id.condition)
@@ -48,7 +50,6 @@ class WeatherRecyclerAdapter(private var onItemClickListener: WeatherFragment.On
             details.setOnClickListener {
                 onItemClickListener?.onItemClick(cities = city)
             }
-
         }
     }
 }
