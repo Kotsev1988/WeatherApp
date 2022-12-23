@@ -1,11 +1,13 @@
 package com.example.weatherapp.ui
 
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.R
@@ -45,6 +47,7 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
         return inflater.inflate(R.layout.fragment_city_weather, container, false)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentCityWeatherBinding.bind(view)
@@ -52,14 +55,12 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
         arguments?.getParcelable<Cities>(BUNDLE_EXTRA).let { weather ->
             city = weather?.cityName.toString()
         }.also {
-            CoroutineScope(Dispatchers.IO).launch {
-                viewModel.getWeather(city)
-            }
-        }?: kotlin.run {
+            viewModel.getWeather(city)
+        } ?: kotlin.run {
             Toast.makeText(requireContext(), "No Any Parcelable", Toast.LENGTH_SHORT)
         }
 
-        viewModel.getLiveData().observe(viewLifecycleOwner, Observer {appSate ->
+        viewModel.getLiveData().observe(viewLifecycleOwner, Observer { appSate ->
             getData(appSate)
         })
     }
@@ -72,12 +73,14 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
                 appSate.weather.let { weather ->
 
                     weather?.current.also {
-                       binding.temperatureInCity.text = it?.temp_c.toString()
-                       binding.feeling.text = it?.feelslike_c.toString()
-                       binding.humidity.text = it?.humidity.toString()
-                   }
-                   binding.nameOfCity.text =  weather?.location?.name
-               }
+
+                        binding.temperatureInCity.text = it?.temp_c.toString()
+                        binding.feeling.text = it?.feelslike_c.toString()
+                        binding.humidity.text = it?.humidity.toString()
+
+                    }
+                    binding.nameOfCity.text = weather?.location?.name
+                }
             }
             is AppStateForCity.Loading -> {
                 binding.cityLoading.visibility = View.VISIBLE
@@ -88,7 +91,6 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
                 Snackbar.make(binding.cityView, error, Snackbar.LENGTH_SHORT).show()
             }
         }
-
     }
 
     companion object {
