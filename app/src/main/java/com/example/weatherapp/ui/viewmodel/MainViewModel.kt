@@ -24,18 +24,21 @@ class MainViewModel : ViewModel() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun getWeatherLoader(city: List<Cities>) {
-        val loader = WeatherLoader(object : WeatherLoadListener {
-            override fun onSuccess(weather: Weather) {
-                liveDataToObserve.value =
-                    AppState.Success(weather = weather, city)
-            }
+        repository.getWeatherFromLoader(
+            object : WeatherLoadListener {
 
-            override fun onFailed(throwable: Throwable) {
-                liveDataToObserve.value = AppState.Error(error = throwable.message.toString())
-            }
+                override fun onSuccess(weather: Weather) {
+                    liveDataToObserve.value =
+                        AppState.Success(weather = weather, city)
+                }
 
-        }, city = city[0].cityName)
-        loader.loadWeather()
+                override fun onFailed(throwable: Throwable) {
+                    liveDataToObserve.value = AppState.Error(error = throwable.message.toString())
+                }
+
+            },
+            city = city[0].cityName,
+        ).loadWeather()
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -50,6 +53,7 @@ class MainViewModel : ViewModel() {
             false -> {
                 repository.getListOfWorldCities()
             }
+
         }
         getWeatherLoader(city = cities)
     }
