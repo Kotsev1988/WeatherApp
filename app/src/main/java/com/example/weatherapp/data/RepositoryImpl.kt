@@ -10,7 +10,9 @@ import retrofit2.Response
 class RepositoryImpl : Repository {
     private val service = RetrofitCleint.getInstance()
     override suspend fun getWeatherFromServer(city: String) : Response<Weather> = service.getWeather(city = city)
-
+    
+    override fun getWeatherFromLoader(listener: WeatherLoadListener, city: String): WeatherLoader =
+        WeatherLoader(listener, city = city)
 
     override fun getWeatherFromLocal() : Weather {
         TODO("Not yet implemented")
