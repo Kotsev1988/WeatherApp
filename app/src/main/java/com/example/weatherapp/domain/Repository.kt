@@ -11,4 +11,5 @@ interface Repository {
     fun getWeatherFromLocal() : Weather
     fun getListOfRussianCities() : List<Cities>
     fun getListOfWorldCities() : List<Cities>
+    fun getWeatherFromLoader(listener: WeatherLoadListener, city: String): WeatherLoader
 }
