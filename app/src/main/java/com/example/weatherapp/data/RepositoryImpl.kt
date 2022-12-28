@@ -16,15 +16,6 @@ class RepositoryImpl : Repository {
     override suspend fun getWeatherFromServer(city: String): Response<Weather> =
         service.getWeather(city = city)
 
-    override fun startWeatherService(contex: Context, city: String) {
-
-        contex?.let {
-            it.startService(Intent(it, WeatherService::class.java).apply {
-                putExtra(CITY_NAME_EXTRA, city)
-            })
-        }
-
-    }
 
     override fun getWeatherFromLoader( listener: WeatherLoadListener, city: String) : WeatherLoader = WeatherLoader(listener, city = city)
 

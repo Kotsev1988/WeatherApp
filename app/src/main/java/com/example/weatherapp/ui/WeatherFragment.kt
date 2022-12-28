@@ -1,8 +1,5 @@
 package com.example.weatherapp.ui
 
-import android.content.BroadcastReceiver
-import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,14 +8,13 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentWeatherBinding
 import com.example.weatherapp.domain.model.*
-import com.example.weatherapp.ui.viewmodel.AppState
 import com.example.weatherapp.ui.viewmodel.MainViewModel
 import com.example.weatherapp.ui.adapters.WeatherHorizontalDay
 import com.example.weatherapp.ui.adapters.WeatherRecyclerAdapter
+import com.example.weatherapp.ui.viewmodel.AppState
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_weather.*
 
@@ -106,10 +102,6 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
 
             is AppState.Loading -> {
                 binding.frameLoading.visibility = View.VISIBLE
-            }
-
-            is AppState.EmptyData -> {
-                Toast.makeText(requireActivity(), it.message, Toast.LENGTH_SHORT).show()
             }
 
             is AppState.Error -> {

@@ -13,15 +13,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentCityWeatherBinding
 import com.example.weatherapp.domain.model.Cities
-import com.example.weatherapp.ui.viewmodel.AppState
 import com.example.weatherapp.ui.viewmodel.AppStateForCity
-import com.example.weatherapp.ui.viewmodel.MainViewModel
 import com.example.weatherapp.ui.viewmodel.ViewModelCity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_city_weather.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class CityWeather : Fragment(R.layout.fragment_city_weather) {
@@ -64,7 +59,7 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
         })
     }
 
-    fun getData(appSate: AppStateForCity) {
+    private fun getData(appSate: AppStateForCity) {
 
         when (appSate) {
             is AppStateForCity.Success -> {
@@ -88,9 +83,6 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
                 binding.cityLoading.visibility = View.GONE
                 val error = appSate.error
                 Snackbar.make(binding.cityView, error, Snackbar.LENGTH_SHORT).show()
-            }
-            is AppStateForCity.EmptyData -> {
-                Toast.makeText(requireActivity(), appSate.message, Toast.LENGTH_SHORT).show()
             }
         }
     }

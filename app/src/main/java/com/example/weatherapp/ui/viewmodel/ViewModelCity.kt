@@ -1,38 +1,53 @@
 package com.example.weatherapp.ui.viewmodel
 
-import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.RepositoryImpl
+import com.example.weatherapp.data.WeatherLoadListener
+import com.example.weatherapp.data.WeatherLoader
 import com.example.weatherapp.domain.Repository
-import com.example.weatherapp.ui.adapters.MyBroadcastForCity
+import com.example.weatherapp.domain.model.Cities
+import com.example.weatherapp.domain.model.Weather
+import com.example.weatherapp.domain.model.getRussianCities
+import com.example.weatherapp.domain.model.getWorldCities
+import kotlinx.coroutines.launch
 
-class ViewModelCity(private val app: Application) : AndroidViewModel(app) {
+class ViewModelCity : ViewModel() {
 
-    private val repository : Repository = RepositoryImpl()
-    private val liveDataToObserve : MutableLiveData<AppStateForCity> = MutableLiveData()
+    private val repository: Repository = RepositoryImpl()
+    private val liveDataToObserve: MutableLiveData<AppStateForCity> = MutableLiveData()
 
-    fun getLiveData() : LiveData<AppStateForCity> = liveDataToObserve
-
-    private lateinit var myBroad: MyBroadcastForCity
-    private val networkObserver: Observer<AppStateForCity> = Observer<AppStateForCity>() {
-        liveDataToObserve.value = it
-    };
+    fun getLiveData(): LiveData<AppStateForCity> = liveDataToObserve
 
     @RequiresApi(Build.VERSION_CODES.N)
-     fun getWeather(city : String) = getDataFromService(city)
+    fun getWeather(city: String) = getDataFromService(city)
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun getWeatherLoader(city: String) {
-        repository.startWeatherService(app.applicationContext, city)
+
+        repository.getWeatherFromLoader(object : WeatherLoadListener {
+            override fun onSuccess(weather: Weather) {
+
+                liveDataToObserve.value =
+                    AppStateForCity.Success(weather = weather)
+            }
+
+            override fun onFailed(throwable: Throwable) {
+
+                liveDataToObserve.value =
+                    AppStateForCity.Error(error = throwable.message.toString())
+            }
+
+        }, city = city).loadWeather()
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    private  fun getDataFromService(city: String) {
+    private fun getDataFromService(city: String) {
 
-        myBroad = MyBroadcastForCity(app.applicationContext)
-        myBroad.observeForever(networkObserver)
-        getWeatherLoader(city = city)
+        getWeatherLoader(city)
     }
 }

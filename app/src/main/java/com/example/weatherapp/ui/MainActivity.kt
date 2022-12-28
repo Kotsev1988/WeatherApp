@@ -9,20 +9,9 @@ import com.example.weatherapp.R
 
 class MainActivity : AppCompatActivity() {
 
-
-    private val broadcast = BroadcastReceiverConnection()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        registerReceiver(broadcast,
-            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(broadcast)
     }
 }

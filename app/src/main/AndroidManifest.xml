@@ -31,15 +31,6 @@
                 android:value="" />
         </activity>
 
-        <service android:name=".data.WeatherService" />
-
-        <receiver
-            android:name=".ui.BroadcastReceiverConnection"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.CONNECTIVITY_ACTION" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

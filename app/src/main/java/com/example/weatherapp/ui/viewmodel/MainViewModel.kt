@@ -1,41 +1,50 @@
 package com.example.weatherapp.ui.viewmodel
 
-import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.*
-import com.example.weatherapp.data.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.weatherapp.domain.Repository
-import com.example.weatherapp.domain.model.*
-import com.example.weatherapp.ui.*
+import com.example.weatherapp.data.RepositoryImpl
+import com.example.weatherapp.data.WeatherLoadListener
+import com.example.weatherapp.data.WeatherLoader
+import com.example.weatherapp.domain.model.Cities
+import com.example.weatherapp.domain.model.Weather
 
-class MainViewModel(private val app: Application) : AndroidViewModel(app) {
+class MainViewModel : ViewModel() {
 
     private val repository: Repository = RepositoryImpl()
     private val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData()
+
     fun getLiveData(): LiveData<AppState> = liveDataToObserve
-
-    private var citiesList: List<Cities> = listOf()
-
-    private lateinit var myBroad: MyBroadcast
-    private val networkObserver: Observer<AppState> = Observer<AppState>() {
-        liveDataToObserve.value = it
-    };
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun getWeather(isRus: Boolean) = getDataFromService(isRus)
 
     @RequiresApi(Build.VERSION_CODES.N)
-    private fun getWeatherLoader(city: Cities) {
+    private fun getWeatherLoader(city: List<Cities>) {
+        repository.getWeatherFromLoader(
+            object : WeatherLoadListener {
 
-        repository.startWeatherService(app.applicationContext, city.cityName)
+                override fun onSuccess(weather: Weather) {
+                    liveDataToObserve.value =
+                        AppState.Success(weather = weather, city)
+                }
 
+                override fun onFailed(throwable: Throwable) {
+                    liveDataToObserve.value = AppState.Error(error = throwable.message.toString())
+                }
+
+            },
+            city = city[0].cityName,
+        ).loadWeather()
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun getDataFromService(isRus: Boolean) {
 
-        citiesList = when (isRus) {
+        val cities: List<Cities> = when (isRus) {
 
             true -> {
                 repository.getListOfRussianCities()
@@ -44,14 +53,8 @@ class MainViewModel(private val app: Application) : AndroidViewModel(app) {
             false -> {
                 repository.getListOfWorldCities()
             }
-        }
-        myBroad = MyBroadcast(app.applicationContext, citiesList)
-        myBroad.observeForever(networkObserver)
-        getWeatherLoader(city = citiesList[0])
-    }
 
-    override fun onCleared() {
-        super.onCleared()
-        myBroad.removeObserver(networkObserver)
+        }
+        getWeatherLoader(city = cities)
     }
 }
