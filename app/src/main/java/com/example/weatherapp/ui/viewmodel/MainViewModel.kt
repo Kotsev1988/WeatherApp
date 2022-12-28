@@ -23,10 +23,10 @@ class MainViewModel : ViewModel() {
             if (weather.isSuccessful) {
                 if (isRus) {
                     liveDataToObserve.value =
-                        AppState.Success(weather = weather.body()!!, getRussianCities())
+                        AppState.Success(weather = weather.body()!!, repository.getListOfRussianCities())
                 } else {
                     liveDataToObserve.value =
-                        AppState.Success(weather = weather.body()!!, getWorldCities())
+                        AppState.Success(weather = weather.body()!!, repository.getListOfWorldCities())
                 }
             }
             else
