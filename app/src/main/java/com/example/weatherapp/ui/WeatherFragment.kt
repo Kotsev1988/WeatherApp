@@ -1,28 +1,31 @@
 package com.example.weatherapp.ui
 
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentWeatherBinding
-import com.example.weatherapp.domain.model.Cities
-import com.example.weatherapp.domain.model.getRussianCities
-import com.example.weatherapp.domain.model.getWorldCities
+import com.example.weatherapp.domain.model.*
 import com.example.weatherapp.ui.viewmodel.AppState
 import com.example.weatherapp.ui.viewmodel.MainViewModel
 import com.example.weatherapp.ui.adapters.WeatherHorizontalDay
 import com.example.weatherapp.ui.adapters.WeatherRecyclerAdapter
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_weather.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+
 
 class WeatherFragment : Fragment(R.layout.fragment_weather) {
+
+
     private var _binding: FragmentWeatherBinding? = null
 
     private val adapter = WeatherRecyclerAdapter(object : OnItemClickListener {
@@ -55,7 +58,6 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -78,7 +80,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    private  fun changeWeatherData() {
+    private fun changeWeatherData() {
 
         isRussianCities = !isRussianCities
         viewModel.getWeather(isRussianCities)
@@ -104,6 +106,10 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
 
             is AppState.Loading -> {
                 binding.frameLoading.visibility = View.VISIBLE
+            }
+
+            is AppState.EmptyData -> {
+                Toast.makeText(requireActivity(), it.message, Toast.LENGTH_SHORT).show()
             }
 
             is AppState.Error -> {

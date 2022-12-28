@@ -31,9 +31,8 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
     }
     private var _binding: FragmentCityWeatherBinding? = null
     private val binding
-        get() = _binding!!
+                get() = _binding!!
     private var city: String = ""
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +88,9 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
                 binding.cityLoading.visibility = View.GONE
                 val error = appSate.error
                 Snackbar.make(binding.cityView, error, Snackbar.LENGTH_SHORT).show()
+            }
+            is AppStateForCity.EmptyData -> {
+                Toast.makeText(requireActivity(), appSate.message, Toast.LENGTH_SHORT).show()
             }
         }
     }
