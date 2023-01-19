@@ -1,5 +1,8 @@
 package com.example.weatherapp.ui
 
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,15 +11,19 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentWeatherBinding
 import com.example.weatherapp.domain.model.*
+import com.example.weatherapp.ui.viewmodel.AppState
 import com.example.weatherapp.ui.viewmodel.MainViewModel
 import com.example.weatherapp.ui.adapters.WeatherHorizontalDay
 import com.example.weatherapp.ui.adapters.WeatherRecyclerAdapter
-import com.example.weatherapp.ui.viewmodel.AppState
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_weather.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class WeatherFragment : Fragment(R.layout.fragment_weather) {
@@ -56,13 +63,14 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
         super.onCreate(savedInstanceState)
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentWeatherBinding.bind(view)
 
         binding.mainFragmentFAB.setOnClickListener {
-            changeWeatherData()
+            CoroutineScope(Dispatchers.IO).launch {
+                changeWeatherData()
+            }
         }
 
         WeatherRecycler.adapter = adapter
@@ -72,18 +80,19 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
             getAppState(it)
         })
 
-        viewModel.getWeather(isRussianCities)
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.getWeather(isRussianCities)
+        }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun changeWeatherData() {
+    private suspend fun changeWeatherData() {
 
         isRussianCities = !isRussianCities
         viewModel.getWeather(isRussianCities)
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
+
     private fun getAppState(it: AppState) {
         when (it) {
 
@@ -104,18 +113,27 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
                 binding.frameLoading.visibility = View.VISIBLE
             }
 
+            is AppState.EmptyData -> {
+                Toast.makeText(requireActivity(), it.message, Toast.LENGTH_SHORT).show()
+            }
+
             is AppState.Error -> {
                 binding.frameLoading.visibility = View.GONE
                 val error = it.error
 
-                binding.mainView.showSnackBar(
-                    error,
-                    getString(R.string.reload),
+                error.message?.let { it1 ->
+                    binding.mainView.showSnackBar(
+                        it1,
+                        getString(R.string.reload),
 
-                    {
-                        viewModel.getDataFromService(isRussianCities)
-                    }
-                )
+                        {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                viewModel.getDataFromService(isRussianCities)
+                            }
+
+                        }
+                    )
+                }
             }
         }
     }

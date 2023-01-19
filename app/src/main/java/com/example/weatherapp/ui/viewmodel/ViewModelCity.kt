@@ -1,53 +1,56 @@
 package com.example.weatherapp.ui.viewmodel
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.weatherapp.data.RepositoryImpl
-import com.example.weatherapp.data.WeatherLoadListener
-import com.example.weatherapp.data.WeatherLoader
+import com.example.weatherapp.data.RetrofitCleint
 import com.example.weatherapp.domain.Repository
-import com.example.weatherapp.domain.model.Cities
 import com.example.weatherapp.domain.model.Weather
-import com.example.weatherapp.domain.model.getRussianCities
-import com.example.weatherapp.domain.model.getWorldCities
-import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-class ViewModelCity : ViewModel() {
+private const val REQUEST_ERROR = "Ошибка запроса на сервер"
+private const val SERVER_ERROR = "Ошибка сервера"
+private const val CORRUPTED_DATA = "Неполные данные"
 
-    private val repository: Repository = RepositoryImpl()
+class ViewModelCity() : ViewModel() {
+
+    private val repository: Repository = RepositoryImpl(RetrofitCleint())
     private val liveDataToObserve: MutableLiveData<AppStateForCity> = MutableLiveData()
 
     fun getLiveData(): LiveData<AppStateForCity> = liveDataToObserve
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun getWeather(city: String) = getDataFromService(city)
+    private val callBack = object : Callback<Weather> {
+        override fun onResponse(call: Call<Weather>, response: Response<Weather>) {
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun getWeatherLoader(city: String) {
+            val weather: Weather? = response.body()
+            liveDataToObserve.postValue(if (response.isSuccessful && weather != null) {
+                checkResponse(weather)
+            } else {
+                AppStateForCity.Error(Throwable(SERVER_ERROR))
+            })
+        }
 
-        repository.getWeatherFromLoader(object : WeatherLoadListener {
-            override fun onSuccess(weather: Weather) {
-
-                liveDataToObserve.value =
-                    AppStateForCity.Success(weather = weather)
-            }
-
-            override fun onFailed(throwable: Throwable) {
-
-                liveDataToObserve.value =
-                    AppStateForCity.Error(error = throwable.message.toString())
-            }
-
-        }, city = city).loadWeather()
+        override fun onFailure(call: Call<Weather>, t: Throwable) {
+            liveDataToObserve.postValue(AppStateForCity.Error(Throwable(t.message
+                ?: REQUEST_ERROR)))
+        }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun getDataFromService(city: String) {
-
-        getWeatherLoader(city)
+    private fun checkResponse(weather: Weather): AppStateForCity {
+        return if (weather.current.temp_c != null || weather.current.humidity != null || weather.forecast.forecastday != null) {
+            AppStateForCity.Success(weather = weather)
+        } else {
+            AppStateForCity.Error(Throwable(CORRUPTED_DATA))
+        }
     }
+
+    suspend fun getWeather(city: String) = getDataFromService(city)
+
+    suspend fun getDataFromService(city: String) {
+
+        repository.getWeatherFromServer(city, callBack)
+    }
+
+
 }
