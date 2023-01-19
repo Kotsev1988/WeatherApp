@@ -10,7 +10,7 @@ interface ServiceApi {
 
     @GET("v1/forecast.json?")
     suspend fun getWeather(
-        @Query("key") key: String = BuildConfig.APP_KEY,
+        @Query("key") key: String = BuildConfig.WEATHER_API_KEY,
         @Query("q") city: String,
         @Query("days") days: String= "1",
         @Query("aqi") aqi: String = "no",

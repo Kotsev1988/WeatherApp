@@ -16,7 +16,6 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField ("String", "APP_KEY", API_KEY)
 
     }
 
@@ -25,6 +24,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    buildTypes.each {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("apikey.properties").newDataInputStream())
+        def apiKey  = properties.getProperty("API_KEY", "")
+        it.buildConfigField "String", "WEATHER_API_KEY", apiKey
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
