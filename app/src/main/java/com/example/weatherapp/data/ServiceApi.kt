@@ -19,4 +19,5 @@ interface ServiceApi {
         @Query("alerts") no: String= "no",
         @Query("lang") lang: String= "ru"
     ) : Call<Weather>
+
 }
