@@ -19,7 +19,7 @@ class WeatherLoader(private val listener: WeatherLoadListener, private val city:
     @RequiresApi(Build.VERSION_CODES.N)
     fun loadWeather(){
 
-        val uri = URL("http://api.weatherapi.com/v1/forecast.json?key=${BuildConfig.APP_KEY}&q=${city}&days=1&aqi=no&alerts=no&lang=ru")
+        val uri = URL("http://api.weatherapi.com/v1/forecast.json?key=${BuildConfig.WEATHER_API_KEY}&q=${city}&days=1&aqi=no&alerts=no&lang=ru")
         val handler = Handler()
 
         try {
