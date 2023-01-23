@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentCityWeatherBinding
 import com.example.weatherapp.domain.model.Cities
+import com.example.weatherapp.domain.model.Weather
 import com.example.weatherapp.ui.viewmodel.AppState
 import com.example.weatherapp.ui.viewmodel.AppStateForCity
 import com.example.weatherapp.ui.viewmodel.MainViewModel
@@ -54,10 +55,7 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
         arguments?.getParcelable<Cities>(BUNDLE_EXTRA).let { weather ->
             city = weather?.cityName.toString()
         }.also {
-            CoroutineScope(Dispatchers.IO).launch {
                 viewModel.getWeather(city)
-            }
-
         } ?: kotlin.run {
             Toast.makeText(requireContext(), "No Any Parcelable", Toast.LENGTH_SHORT)
         }
@@ -72,8 +70,10 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
         when (appSate) {
             is AppStateForCity.Success -> {
                 binding.cityLoading.visibility = View.GONE
+
                 appSate.weather.let { weather ->
 
+                    saveCity(weather)
                     weather?.current.also {
 
                         binding.temperatureInCity.text = it?.temp_c.toString()
@@ -99,6 +99,13 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
             is AppStateForCity.EmptyData -> {
                 Toast.makeText(requireActivity(), appSate.message, Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun saveCity(weather: Weather?) {
+
+        if (weather != null) {
+            viewModel.saveCityToDB(weather)
         }
     }
 

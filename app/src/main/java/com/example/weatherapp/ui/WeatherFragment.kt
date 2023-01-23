@@ -1,10 +1,13 @@
 package com.example.weatherapp.ui
 
 import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -19,15 +22,16 @@ import com.example.weatherapp.ui.viewmodel.AppState
 import com.example.weatherapp.ui.viewmodel.MainViewModel
 import com.example.weatherapp.ui.adapters.WeatherHorizontalDay
 import com.example.weatherapp.ui.adapters.WeatherRecyclerAdapter
+import com.example.weatherapp.ui.addcity.AddCityFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_weather.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+private const val IS_WORLD_KEY = "LIST_OF_TOWNS_KEY"
 
 class WeatherFragment : Fragment(R.layout.fragment_weather) {
-
 
     private var _binding: FragmentWeatherBinding? = null
 
@@ -37,7 +41,6 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
             activity?.supportFragmentManager?.apply {
                 val bundle = Bundle()
                 bundle.putParcelable(CityWeather.BUNDLE_EXTRA, cities)
-
                 beginTransaction()
                     .add(R.id.container, CityWeather.newInstance(bundle))
                     .addToBackStack("")
@@ -61,16 +64,17 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentWeatherBinding.bind(view)
 
+        showListOfTowns()
+
         binding.mainFragmentFAB.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                changeWeatherData()
-            }
+            changeWeatherData()
         }
 
         WeatherRecycler.adapter = adapter
@@ -80,15 +84,71 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
             getAppState(it)
         })
 
-        CoroutineScope(Dispatchers.IO).launch {
-            viewModel.getWeather(isRussianCities)
+        viewModel.getLiveDataCities().observe(viewLifecycleOwner, Observer {
+            adapter.setData(it)
+        })
+
+        viewModel.updateCitites()
+        viewModel.getWeather(isRussianCities)
+
+    }
+
+    private fun showListOfTowns() {
+        activity?.let {
+            if (it.getPreferences(Context.MODE_PRIVATE).getBoolean(IS_WORLD_KEY,
+                    false)
+            ) {
+                changeWeatherData()
+            } else {
+                viewModel.getDataFromService(isRussianCities)
+            }
         }
     }
 
-    private suspend fun changeWeatherData() {
+    private fun saveListOfTowns() {
+        activity?.let {
+            with(it.getPreferences(Context.MODE_PRIVATE).edit()) {
+                putBoolean(IS_WORLD_KEY, !isRussianCities)
+                apply()
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        println("MainFragment Pause")
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        println("MainFragment onStop")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        println("MainFragment onStart")
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        println("MainFragment Atach")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        println("MainFragment Detach")
+    }
+
+    private fun changeWeatherData() {
 
         isRussianCities = !isRussianCities
         viewModel.getWeather(isRussianCities)
+
+        saveListOfTowns()
 
     }
 
@@ -104,8 +164,6 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
                 val cities = it.cities
 
                 binding.city.text = cities.get(0).cityName
-
-                adapter.setData(cities)
                 weather?.forecast?.forecastday?.get(0)?.hour?.let { it1 -> adapterOfDay.setData(it1) }
             }
 
@@ -127,10 +185,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
                         getString(R.string.reload),
 
                         {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                viewModel.getDataFromService(isRussianCities)
-                            }
-
+                            viewModel.getDataFromService(isRussianCities)
                         }
                     )
                 }
@@ -151,6 +206,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
     ) {
         Snackbar.make(this, text, length).setAction(actionText, action).show()
     }
+
 }
 
 

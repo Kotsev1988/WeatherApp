@@ -1,10 +1,13 @@
 package com.example.weatherapp.ui.viewmodel
 
 import androidx.lifecycle.*
+import com.example.weatherapp.App
 import com.example.weatherapp.data.RepositoryImpl
 import com.example.weatherapp.data.RetrofitCleint
-import com.example.weatherapp.domain.Repository
+import com.example.weatherapp.domain.model.repository.Repository
 import com.example.weatherapp.domain.model.Weather
+import com.example.weatherapp.domain.model.repository.history.LocalRepository
+import com.example.weatherapp.domain.model.repository.history.LocalRepositoryImpl
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -13,12 +16,18 @@ private const val REQUEST_ERROR = "Ошибка запроса на сервер
 private const val SERVER_ERROR = "Ошибка сервера"
 private const val CORRUPTED_DATA = "Неполные данные"
 
-class ViewModelCity() : ViewModel() {
+class ViewModelCity(
+    val detailsLiveData: MutableLiveData<AppState> = MutableLiveData(),
+    private val detailsRepository: Repository = RepositoryImpl(RetrofitCleint()),
+    private val historyRepository: LocalRepository = LocalRepositoryImpl(App.getHistoryDao()),
+) : ViewModel() {
 
     private val repository: Repository = RepositoryImpl(RetrofitCleint())
     private val liveDataToObserve: MutableLiveData<AppStateForCity> = MutableLiveData()
 
     fun getLiveData(): LiveData<AppStateForCity> = liveDataToObserve
+
+
 
     private val callBack = object : Callback<Weather> {
         override fun onResponse(call: Call<Weather>, response: Response<Weather>) {
@@ -45,12 +54,27 @@ class ViewModelCity() : ViewModel() {
         }
     }
 
-    suspend fun getWeather(city: String) = getDataFromService(city)
+     fun getWeather(city: String) = getDataFromService(city)
 
-    suspend fun getDataFromService(city: String) {
+     fun getDataFromService(city: String) {
 
+        detailsLiveData.value = AppState.Loading
         repository.getWeatherFromServer(city, callBack)
     }
+
+    fun getWeatherFromRemoteSource(city : String){
+
+        detailsLiveData.value = AppState.Loading
+        detailsRepository.getWeatherFromServer(city, callBack)
+    }
+
+    fun saveCityToDB(weather: Weather){
+        historyRepository.saveEntity(weather)
+    }
+
+
+
+
 
 
 }

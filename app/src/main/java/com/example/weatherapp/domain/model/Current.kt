@@ -8,6 +8,4 @@ data class Current(
     val feelslike_c: Double,
     val humidity: Int,
     val temp_c: Double
-
-
 ) : Parcelable
