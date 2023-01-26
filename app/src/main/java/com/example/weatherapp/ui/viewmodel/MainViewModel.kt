@@ -16,7 +16,7 @@ private const val SERVER_ERROR = "Ошибка сервера"
 private const val CORRUPTED_DATA = "Неполные данные"
 
 class MainViewModel(
-    private val addRepository: AddRepository = AddRepositoryImpl(App.getCitiesDao())
+    private val addRepository: AddRepository = AddRepositoryImpl(App.getCitiesDao()),
 ) : ViewModel() {
 
     private val repository: Repository = RepositoryImpl(RetrofitCleint())
@@ -28,6 +28,8 @@ class MainViewModel(
     fun getLiveDataCities(): LiveData<List<Cities>> = liveDataListCities
 
     private var citiesList: List<Cities> = listOf()
+
+    private var typeOfCities: Boolean = false
 
     private val callBack = object : Callback<Weather> {
         override fun onResponse(call: Call<Weather>, response: Response<Weather>) {
@@ -53,20 +55,20 @@ class MainViewModel(
         }
     }
 
-     fun getWeather(isRus: Boolean) = getDataFromService(isRus)
+    fun getWeather(isRus: Boolean) = getDataFromService(isRus)
 
-     fun getDataFromService(isRus: Boolean) {
+    fun getDataFromService(isRus: Boolean) {
 
-         if (addRepository.getAll().isEmpty()){
-             repository.getListOfRussianCities().forEach {
-                 addRepository.addCity(it)
-             }
+        typeOfCities = isRus
+        if (addRepository.getAll().isEmpty()) {
+            repository.getListOfRussianCities().forEach {
+                addRepository.addCity(it)
+            }
 
-             repository.getListOfWorldCities().forEach {
-                 addRepository.addCity(it)
-             }
-
-         }
+            repository.getListOfWorldCities().forEach {
+                addRepository.addCity(it)
+            }
+        }
 
         citiesList = when (isRus) {
             true -> {
@@ -77,25 +79,20 @@ class MainViewModel(
                 addRepository.getListOfWorldCities()
             }
         }
-         liveDataListCities.value = citiesList
 
-
-
+        liveDataListCities.value = citiesList
         repository.getWeatherFromServer(citiesList[0].cityName, callBack)
     }
 
-    fun updateCitites(){
+    fun updateCitites() {
 
-            addRepository.getListOfRussianCities1().observeForever {
+        addRepository.getAllLive().observeForever {
+            if (typeOfCities) {
                 liveDataListCities.value = addRepository.getListOfRussianCities()
-            }
-
-
-            addRepository.getListOfWorldCities1().observeForever {
+            } else {
                 liveDataListCities.value = addRepository.getListOfWorldCities()
             }
-
-
+        }
     }
 }
 

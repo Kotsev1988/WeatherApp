@@ -8,31 +8,25 @@ import com.example.weatherapp.utils.convertAddEntityToCity1
 import com.example.weatherapp.utils.convertCityToEntity
 
 class AddRepositoryImpl(
-    private val addRepository: AddCityDao
-): AddRepository {
+    private val addRepository: AddCityDao,
+) : AddRepository {
     override fun getAll(): List<Cities> {
-       return convertAddEntityToCity(addRepository.all())
+        return convertAddEntityToCity(addRepository.all())
+    }
+
+    override fun getAllLive(): LiveData<List<Cities>> {
+        return convertAddEntityToCity1(addRepository.allLiveData())
     }
 
     override fun getListOfRussianCities(): List<Cities> {
         return convertAddEntityToCity(addRepository.getRussianCities())
     }
 
-    override fun getListOfRussianCities1(): LiveData<List<Cities>> {
-        return convertAddEntityToCity1(addRepository.getRussianCities1())
-    }
-
     override fun getListOfWorldCities(): List<Cities> {
         return convertAddEntityToCity(addRepository.getWorldCities())
-    }
-
-    override fun getListOfWorldCities1(): LiveData<List<Cities>> {
-        return convertAddEntityToCity1(addRepository.getWorldCities1())
     }
 
     override fun addCity(cities: Cities) {
         addRepository.insert(convertCityToEntity(cities))
     }
-
-
 }

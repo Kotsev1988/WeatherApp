@@ -5,18 +5,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.weatherapp.App
+import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.databinding.FragmentAddCityBinding
-import com.example.weatherapp.domain.model.Cities
-import com.example.weatherapp.domain.model.repository.addcity.AddRepository
-import com.example.weatherapp.domain.model.repository.addcity.AddRepositoryImpl
 
 
 class AddCityFragment : Fragment() {
-    private val repository: AddRepository = AddRepositoryImpl(App.getCitiesDao())
     private var _binding: FragmentAddCityBinding? = null
     private val binding
         get() = _binding!!
+
+    private val addCityViewModel by lazy {
+        ViewModelProvider(this)[AddCityViewModel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,8 +34,7 @@ class AddCityFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.adding.setOnClickListener {
-            repository.addCity(Cities(binding.addCity.text.toString(), binding.isRussain.isChecked))
-
+            addCityViewModel.addCity(binding.addCity.text.toString(), binding.isRussain.isChecked)
             activity?.supportFragmentManager?.popBackStack()
         }
     }
