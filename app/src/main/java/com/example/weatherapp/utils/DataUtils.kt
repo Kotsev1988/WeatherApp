@@ -25,8 +25,6 @@ fun convertAddEntityToCity(entityList: List<AddCityEntities>): List<Cities> {
 
  fun convertAddEntityToCity1(entityList: LiveData<List<AddCityEntities>>): LiveData<List<Cities>> {
 
-
-
     return Transformations.map(entityList){
         entityList.value?.map {
             Cities(it.city, it.isRus)

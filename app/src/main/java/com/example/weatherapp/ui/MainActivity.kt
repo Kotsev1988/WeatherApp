@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.weatherapp.R
 import com.example.weatherapp.ui.addcity.AddCityFragment
+import com.example.weatherapp.ui.get_contacts.GetContactsFragment
 import com.example.weatherapp.ui.history.HistoryFragment
 
 class MainActivity : AppCompatActivity() {
@@ -38,6 +39,16 @@ class MainActivity : AppCompatActivity() {
                 supportFragmentManager.apply {
                     beginTransaction()
                         .add(R.id.container, AddCityFragment.newInstance())
+                        .addToBackStack("")
+                        .commitAllowingStateLoss()
+                }
+                true
+            }
+
+            R.id.get_contacts ->{
+                supportFragmentManager.apply {
+                    beginTransaction()
+                        .add(R.id.container, GetContactsFragment.newInstance())
                         .addToBackStack("")
                         .commitAllowingStateLoss()
                 }

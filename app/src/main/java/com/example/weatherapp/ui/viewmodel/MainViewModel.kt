@@ -78,24 +78,20 @@ class MainViewModel(
             }
         }
          liveDataListCities.value = citiesList
-
-
-
         repository.getWeatherFromServer(citiesList[0].cityName, callBack)
     }
 
     fun updateCitites(){
 
             addRepository.getListOfRussianCities1().observeForever {
-                liveDataListCities.value = addRepository.getListOfRussianCities()
-            }
 
+                liveDataListCities.value = it
+            }
 
             addRepository.getListOfWorldCities1().observeForever {
-                liveDataListCities.value = addRepository.getListOfWorldCities()
+
+                liveDataListCities.value = it
             }
-
-
     }
 }
 

@@ -85,6 +85,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
         })
 
         viewModel.getLiveDataCities().observe(viewLifecycleOwner, Observer {
+
             adapter.setData(it)
         })
 

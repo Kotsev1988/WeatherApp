@@ -9,4 +9,5 @@
     <string name="add_city">add_city</string>
     <string name="adding">Добавить</string>
     <string name="RussianCity">Российский город</string>
+    <string name="get_contacts">getContact</string>
 </resources>

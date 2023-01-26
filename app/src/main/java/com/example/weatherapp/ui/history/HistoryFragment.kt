@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.R
@@ -54,6 +55,25 @@ class HistoryFragment : Fragment() {
         })
 
         viewModel.getAllHistory()
+
+        binding.searchItems.setOnCloseListener {
+
+            viewModel.getAllHistory()
+            true
+        }
+
+        binding.searchItems.setOnQueryTextListener(object : OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String): Boolean {
+                viewModel.getFilterData(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                viewModel.getFilterData(newText)
+                return true
+            }
+        }
+        )
 
     }
 

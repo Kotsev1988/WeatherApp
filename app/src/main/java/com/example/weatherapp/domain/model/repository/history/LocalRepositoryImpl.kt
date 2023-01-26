@@ -10,6 +10,10 @@ class LocalRepositoryImpl(private val localDataSource: HistoryDao) : LocalReposi
         return convertHistoryEntityToWeather(localDataSource.all())
     }
 
+    override fun getFilterData(s: String): List<Weather> {
+        return convertHistoryEntityToWeather(localDataSource.getDataByWord(s))
+    }
+
     override fun saveEntity(weather: Weather) {
        localDataSource.insert(convertWeatherToEntity(weather))
     }

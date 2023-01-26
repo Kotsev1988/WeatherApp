@@ -17,4 +17,9 @@ class HistoryViewModel(
         historyLiveData.value = AppStateHistory.Success(historyRepository.getAllHistory())
     }
 
+    fun getFilterData(newText: String) {
+        historyLiveData.value = AppStateHistory.Success(historyRepository.getFilterData(newText))
+
+    }
+
 }
