@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.weatherapp.App
 import com.example.weatherapp.domain.model.repository.history.LocalRepository
 import com.example.weatherapp.domain.model.repository.history.LocalRepositoryImpl
+import com.example.weatherapp.ui.viewmodel.appSatets.AppStateHistory
 
 class HistoryViewModel(
     val historyLiveData: MutableLiveData<AppStateHistory> = MutableLiveData(),

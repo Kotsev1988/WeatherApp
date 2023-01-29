@@ -8,7 +8,7 @@ import com.example.weatherapp.utils.convertAddEntityToCity1
 import com.example.weatherapp.utils.convertCityToEntity
 
 class AddRepositoryImpl(
-    private val addRepository: AddCityDao
+    private val addRepository: AddCityDao,
 ): AddRepository {
     override fun getAll(): List<Cities> {
        return convertAddEntityToCity(addRepository.all())

@@ -36,6 +36,26 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:gravity="center"
+            android:text="@string/geo_lat_lng"
+            />
+
+        <TextView
+            android:id="@+id/geoData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="@dimen/textSize"
+            android:layout_margin="@dimen/marginSize" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/marginSize"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:gravity="center"
             android:text="@string/temp"
             />
 

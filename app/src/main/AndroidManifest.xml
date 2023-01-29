@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
@@ -18,6 +20,9 @@
         android:theme="@style/Theme.WeatherApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value= "AIzaSyBt4RGX4o7yj8cutTU5Iu3iIKs_QhO5V1Y" />
 
         <activity
             android:name=".ui.MainActivity"

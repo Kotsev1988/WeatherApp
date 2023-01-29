@@ -15,7 +15,6 @@ class App : Application() {
 
     }
 
-
     companion object {
         private var appInstance: App? = null
         private var db: HistoryDataBase? = null
@@ -57,7 +56,7 @@ class App : Application() {
             return db!!.citiesDao()
         }
 
-        fun getAppContext(): Context{
+        fun getAppContext(): Context {
             return appInstance!!.applicationContext
         }
     }

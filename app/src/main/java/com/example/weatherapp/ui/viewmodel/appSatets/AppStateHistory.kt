@@ -1,4 +1,4 @@
-package com.example.weatherapp.ui.viewmodel
+package com.example.weatherapp.ui.viewmodel.appSatets
 
 
 import com.example.weatherapp.domain.model.Weather

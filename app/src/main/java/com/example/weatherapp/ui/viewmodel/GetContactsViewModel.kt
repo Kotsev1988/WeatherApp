@@ -1,14 +1,10 @@
 package com.example.weatherapp.ui.viewmodel
 
-import android.Manifest
+
 import android.content.ContentResolver
-import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.provider.ContactsContract
-import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,9 +18,6 @@ class GetContactsViewModel(): ViewModel() {
     private val contacts : ArrayList<String> = arrayListOf()
 
     private var getNumber: String = ""
-
-
-
 
      fun getContacts(){
 

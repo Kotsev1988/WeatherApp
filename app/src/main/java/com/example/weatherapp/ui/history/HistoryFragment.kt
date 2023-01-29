@@ -8,10 +8,8 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentHistoryBinding
-import com.example.weatherapp.ui.viewmodel.AppState
-import com.example.weatherapp.ui.viewmodel.AppStateHistory
+import com.example.weatherapp.ui.viewmodel.appSatets.AppStateHistory
 import com.example.weatherapp.ui.viewmodel.HistoryViewModel
 
 

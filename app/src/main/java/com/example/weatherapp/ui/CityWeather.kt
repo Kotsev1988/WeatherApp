@@ -1,13 +1,11 @@
 package com.example.weatherapp.ui
 
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -15,15 +13,10 @@ import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentCityWeatherBinding
 import com.example.weatherapp.domain.model.Cities
 import com.example.weatherapp.domain.model.Weather
-import com.example.weatherapp.ui.viewmodel.AppState
-import com.example.weatherapp.ui.viewmodel.AppStateForCity
-import com.example.weatherapp.ui.viewmodel.MainViewModel
+import com.example.weatherapp.ui.viewmodel.appSatets.AppStateForCity
 import com.example.weatherapp.ui.viewmodel.ViewModelCity
+import com.example.weatherapp.ui.viewmodel.appSatets.AppStateGetGoesByName
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_city_weather.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 class CityWeather : Fragment(R.layout.fragment_city_weather) {
@@ -38,7 +31,6 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -54,15 +46,39 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
 
         arguments?.getParcelable<Cities>(BUNDLE_EXTRA).let { weather ->
             city = weather?.cityName.toString()
+
         }.also {
                 viewModel.getWeather(city)
         } ?: kotlin.run {
             Toast.makeText(requireContext(), "No Any Parcelable", Toast.LENGTH_SHORT)
         }
+        context?.let {
+            viewModel.getAddressAsync(it, city)
+        }
+
 
         viewModel.getLiveData().observe(viewLifecycleOwner, Observer { appSate ->
             getData(appSate)
         })
+
+        viewModel.getLiveDataLocation().observe(viewLifecycleOwner, Observer {
+            getLocationData(it)
+        })
+    }
+
+    private fun getLocationData(it: AppStateGetGoesByName) {
+
+        when (it) {
+
+            is AppStateGetGoesByName.Success -> {
+                binding.geoData.text = it.location.get(0).latitude.toString()+" "+
+                        it.location.get(0).longitude.toString()
+            }
+            is AppStateGetGoesByName.Error-> {
+                Toast.makeText(context, it.error.message, Toast.LENGTH_SHORT).show()
+            }
+
+        }
     }
 
     fun getData(appSate: AppStateForCity) {

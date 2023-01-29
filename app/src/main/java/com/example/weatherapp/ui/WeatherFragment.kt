@@ -1,35 +1,34 @@
 package com.example.weatherapp.ui
 
-import android.content.BroadcastReceiver
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
-import android.content.IntentFilter
-import android.net.ConnectivityManager
-import android.os.Build
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentWeatherBinding
 import com.example.weatherapp.domain.model.*
-import com.example.weatherapp.ui.viewmodel.AppState
+import com.example.weatherapp.ui.viewmodel.appSatets.AppState
 import com.example.weatherapp.ui.viewmodel.MainViewModel
 import com.example.weatherapp.ui.adapters.WeatherHorizontalDay
 import com.example.weatherapp.ui.adapters.WeatherRecyclerAdapter
-import com.example.weatherapp.ui.addcity.AddCityFragment
+import com.example.weatherapp.ui.googleMap.MapsFragment
+import com.example.weatherapp.ui.viewmodel.appSatets.AppStateLocation
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_weather.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 private const val IS_WORLD_KEY = "LIST_OF_TOWNS_KEY"
+const val REQUEST_CODE = 30
+private const val REFRESH_PERIOD = 60000L
+private const val MINIMAL_DISTANCE = 100f
+
 
 class WeatherFragment : Fragment(R.layout.fragment_weather) {
 
@@ -62,6 +61,8 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
         fun onItemClick(cities: Cities)
     }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,6 +78,13 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
             changeWeatherData()
         }
 
+        binding.locationIcon.setOnClickListener{
+
+            openDetailsFragmentMap()
+        }
+
+        checkPermission()
+
         WeatherRecycler.adapter = adapter
         weatherHorizontal.adapter = adapterOfDay
 
@@ -89,6 +97,11 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
             adapter.setData(it)
         })
 
+        viewModel.getLiveDataLocation().observe(viewLifecycleOwner, Observer {
+            getAppStateLocation(it)
+        })
+
+        viewModel.getLocation()
         viewModel.updateCitites()
         viewModel.getWeather(isRussianCities)
 
@@ -115,33 +128,88 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        println("MainFragment Pause")
+    private fun checkPermission(){
+        activity?.let {
+            when{
+                ContextCompat.checkSelfPermission(it,
+                    Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED ->{
+                   viewModel.getLocation()
+                }
+
+                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ->{
+                    showRationaleDialog()
+                }
+
+                else -> {
+                    requestPermission()
+                }
+            }
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun requestPermission() {
+        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
     }
 
-    override fun onStop() {
-        super.onStop()
-        println("MainFragment onStop")
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when(requestCode){
+            REQUEST_CODE ->{
+                var grantedPermission = 0;
+                if (grantResults.isNotEmpty()) {
+                    for (i in grantResults){
+                        if (i == PackageManager.PERMISSION_GRANTED) {
+                            grantedPermission++
+                        }
+                    }
+                    if (grantResults.size == grantedPermission) {
+                        viewModel.getLocation()
+                    } else {
+                        showDialog(getString(R.string.dialog_title_no_gps), getString(R.string.dialog_message_no_gps))
+                    }
+                }else{
+                    showDialog(getString(R.string.dialog_title_no_gps), getString(R.string.dialog_message_no_gps))
+                }
+            }
+        }
     }
 
-    override fun onStart() {
-        super.onStart()
-        println("MainFragment onStart")
+    private fun showDialog(tile: String, message: String) {
+
+        context?.let {
+            AlertDialog.Builder(it)
+                .setTitle(tile)
+                .setMessage(message)
+                .setNegativeButton(R.string.dialog_button_close) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        println("MainFragment Atach")
+    private fun openDetailsFragmnet(cities: Cities) {
+        activity?.supportFragmentManager?.apply {
+            beginTransaction()
+                .add(R.id.container, CityWeather.newInstance(Bundle().apply{
+                   putParcelable (CityWeather.BUNDLE_EXTRA, cities)
+                }))
+                .addToBackStack("")
+                .commitAllowingStateLoss()
+        }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        println("MainFragment Detach")
+    private fun openDetailsFragmentMap() {
+        activity?.supportFragmentManager?.apply {
+            beginTransaction()
+                .add(R.id.container, MapsFragment.newInstance())
+                .addToBackStack("")
+                .commitAllowingStateLoss()
+        }
     }
 
     private fun changeWeatherData() {
@@ -194,9 +262,64 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
         }
     }
 
+    @SuppressLint("SetTextI18n")
+    private fun getAppStateLocation(it: AppStateLocation) {
+        when (it) {
+
+            is AppStateLocation.Success -> {
+                binding.location.text = it.cities.toString()+ " " +
+                it.weather?.current?.temp_c.toString() +"°C"
+                }
+
+            is AppStateLocation.EmptyData -> {
+                context?.let { context ->
+                    showDialog(context.getString(R.string.dialog_title_gps_turned_off),
+                        context.getString(R.string.dialog_message_last_location_unknown))
+                }
+            }
+
+            is AppStateLocation.ShowRationalDialog-> {
+                showRationaleDialog()
+            }
+
+            is AppStateLocation.Error -> {
+                binding.frameLoading.visibility = View.GONE
+                val error = it.error
+
+                error.message?.let { it1 ->
+                    binding.mainView.showSnackBar(
+                        it1,
+                        getString(R.string.reload),
+
+                        {
+                            viewModel.getDataFromService(isRussianCities)
+                        }
+                    )
+                }
+            }
+        }
+    }
+
     override fun onDestroy() {
         adapter.removeListener()
         super.onDestroy()
+    }
+
+    private fun showRationaleDialog() {
+        context?.let {
+            AlertDialog.Builder(it)
+                .setTitle(R.string.dialog_rationale_title)
+                .setMessage(R.string.dialog_rationale_meaasge)
+                .setPositiveButton(it.getString(R.string.dialog_rationale_give_access))
+                {
+                        _, _ ->
+                     requestPermission()
+                }
+                .setNegativeButton(R.string.dialog_rationale_decline) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
     }
 
     private fun View.showSnackBar(
