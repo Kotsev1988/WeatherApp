@@ -20,9 +20,23 @@
         android:theme="@style/Theme.WeatherApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <receiver
+            android:name=".MyReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
+        <service
+            android:name=".MyFireBaseMessaging"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value= "AIzaSyBt4RGX4o7yj8cutTU5Iu3iIKs_QhO5V1Y" />
+            android:value="AIzaSyBt4RGX4o7yj8cutTU5Iu3iIKs_QhO5V1Y" />
 
         <activity
             android:name=".ui.MainActivity"

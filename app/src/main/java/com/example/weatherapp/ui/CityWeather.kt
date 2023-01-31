@@ -45,6 +45,7 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
         _binding = FragmentCityWeatherBinding.bind(view)
 
         arguments?.getParcelable<Cities>(BUNDLE_EXTRA).let { weather ->
+
             city = weather?.cityName.toString()
 
         }.also {
@@ -71,8 +72,10 @@ class CityWeather : Fragment(R.layout.fragment_city_weather) {
         when (it) {
 
             is AppStateGetGoesByName.Success -> {
-                binding.geoData.text = it.location.get(0).latitude.toString()+" "+
-                        it.location.get(0).longitude.toString()
+
+                    binding.geoData.text = it.location.get(0).latitude.toString() + " " +
+                            it.location.get(0).longitude.toString()
+
             }
             is AppStateGetGoesByName.Error-> {
                 Toast.makeText(context, it.error.message, Toast.LENGTH_SHORT).show()

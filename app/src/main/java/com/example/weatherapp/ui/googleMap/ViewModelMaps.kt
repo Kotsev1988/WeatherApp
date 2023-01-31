@@ -122,9 +122,7 @@ class ViewModelMaps : ViewModel() {
                     handle.post {
                         liveDataToObserve.value = AppStateMap.Error(Throwable("Error "))
                     }
-
                 }
-
             } catch (e: IOException) {
                 e.printStackTrace()
             }

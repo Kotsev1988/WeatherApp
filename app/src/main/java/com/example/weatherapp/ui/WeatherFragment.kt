@@ -2,7 +2,10 @@ package com.example.weatherapp.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,6 +15,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.weatherapp.MyReceiver
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentWeatherBinding
 import com.example.weatherapp.domain.model.*
@@ -28,6 +33,11 @@ private const val IS_WORLD_KEY = "LIST_OF_TOWNS_KEY"
 const val REQUEST_CODE = 30
 private const val REFRESH_PERIOD = 60000L
 private const val MINIMAL_DISTANCE = 100f
+
+private const val PROCESS_ERROR = "Обработка ошибки"
+const val INTENT_FILTER = "INTENT_FILTER"
+
+const val PUT_CITY_EXTRA = "CITY_NAME"
 
 
 class WeatherFragment : Fragment(R.layout.fragment_weather) {
@@ -57,22 +67,45 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
 
+    private val loadResultsReceiver: BroadcastReceiver = object :
+        BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+
+            val message = intent.getStringExtra(PUT_CITY_EXTRA)
+            val cities = message?.let { Cities(it, false) }
+            activity?.supportFragmentManager?.apply {
+                val bundle = Bundle()
+                bundle.putParcelable(CityWeather.BUNDLE_EXTRA, cities)
+                beginTransaction()
+                    .add(R.id.container, CityWeather.newInstance(bundle))
+                    .addToBackStack("")
+                    .commitAllowingStateLoss()
+            }
+
+        }
+    }
+
+
     interface OnItemClickListener {
         fun onItemClick(cities: Cities)
     }
 
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
+        override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-    }
+//            println("OnCreate Fragment")
+            context?.let {
+                LocalBroadcastManager.getInstance(it)
+                    .registerReceiver(loadResultsReceiver,
+                        IntentFilter(INTENT_FILTER))
+            }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentWeatherBinding.bind(view)
 
         showListOfTowns()
+
 
         binding.mainFragmentFAB.setOnClickListener {
             changeWeatherData()
@@ -302,6 +335,10 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
 
     override fun onDestroy() {
         adapter.removeListener()
+        context?.let {
+            LocalBroadcastManager.getInstance(it).unregisterReceiver(loadResultsReceiver)
+        }
+
         super.onDestroy()
     }
 

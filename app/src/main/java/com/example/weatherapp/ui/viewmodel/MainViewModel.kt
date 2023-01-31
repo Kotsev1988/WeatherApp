@@ -47,6 +47,8 @@ class MainViewModel(
     private var citiesList: List<Cities> = listOf()
     private var city: String= ""
 
+
+
     private val callBack = object : Callback<Weather> {
         override fun onResponse(call: Call<Weather>, response: Response<Weather>) {
 

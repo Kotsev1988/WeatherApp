@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.weatherapp.R
+import com.example.weatherapp.domain.model.Cities
 import com.example.weatherapp.ui.addcity.AddCityFragment
 import com.example.weatherapp.ui.get_contacts.GetContactsFragment
 import com.example.weatherapp.ui.history.HistoryFragment
@@ -17,6 +18,21 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+//        println("OnCreate Activity")
+//        val city = intent.getStringExtra("city")
+//        if (intent != null) {
+//            if (city != null) {
+//                val bundle = Bundle()
+//                bundle.putParcelable(CityWeather.BUNDLE_EXTRA, Cities(city, false))
+//                supportFragmentManager.apply {
+//                    beginTransaction()
+//                        .add(R.id.container, CityWeather.newInstance(bundle))
+//                        .addToBackStack("")
+//                        .commitAllowingStateLoss()
+//                }
+//            }
+//            println("CITY PUSH $city")
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

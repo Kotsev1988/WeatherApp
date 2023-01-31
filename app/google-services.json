@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "920762526639",
+    "project_id": "weatherappkotlin-bee8c",
+    "storage_bucket": "weatherappkotlin-bee8c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920762526639:android:5756c4141bc3e3880e1d5a",
+        "android_client_info": {
+          "package_name": "com.example.weatherapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "920762526639-36da9v4ek5pl31355uvul9iri85rlcf5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOIabzyrT-fwAW8MGNTUuTRYaO4GMAiQQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "920762526639-36da9v4ek5pl31355uvul9iri85rlcf5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

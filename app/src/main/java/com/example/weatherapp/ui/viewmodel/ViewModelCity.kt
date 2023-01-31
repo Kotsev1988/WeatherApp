@@ -1,6 +1,5 @@
 package com.example.weatherapp.ui.viewmodel
 
-
 import android.content.Context
 import android.location.Geocoder
 import androidx.lifecycle.*
@@ -25,7 +24,6 @@ private const val REQUEST_ERROR = "Ошибка запроса на сервер
 private const val SERVER_ERROR = "Ошибка сервера"
 private const val CORRUPTED_DATA = "Неполные данные"
 private const val REQUEST_ERROR_LOCATION = "Ошибка запроса локации"
-
 
 class ViewModelCity(
     val detailsLiveData: MutableLiveData<AppState> = MutableLiveData(),
