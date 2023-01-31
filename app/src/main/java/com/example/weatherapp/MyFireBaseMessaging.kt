@@ -29,7 +29,6 @@ class MyFireBaseMessaging : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        println("ONMESSAGERECEIVE "+message.data)
         val remoteData = message.data
 
         if (remoteData.isNotEmpty()) {
@@ -78,6 +77,7 @@ class MyFireBaseMessaging : FirebaseMessagingService() {
             setSmallIcon(R.drawable.ic_notification_foreground)
             setContentTitle(title)
             setContentText(message)
+            setAutoCancel(true)
             addAction(0, "See more $title", pendingIntent)
             priority = NotificationCompat.PRIORITY_DEFAULT
         }
