@@ -4,6 +4,7 @@ package com.example.weatherapp.ui.viewmodel
 import android.content.ContentResolver
 import android.database.Cursor
 import android.net.Uri
+import android.os.Handler
 import android.provider.ContactsContract
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,11 +20,12 @@ class GetContactsViewModel(): ViewModel() {
 
     private var getNumber: String = ""
 
-     fun getContacts(){
+      fun getContacts(){
 
+          val handler = Handler()
         App.getAppContext().let {
             val contentResolver: ContentResolver = it.contentResolver
-            val runnable = Thread {
+            val thread = Thread {
 
                 val cursorContacts: Cursor? =contentResolver.query(
                     ContactsContract.Contacts.CONTENT_URI,
@@ -42,15 +44,12 @@ class GetContactsViewModel(): ViewModel() {
                         }
                     }
                     cursor.close()
+                    handler.post {
+                        liveDataContacts.value = contacts
+                    }
                 }
             }
-            runnable.start()
-            try {
-                runnable.join()
-            }catch (e: InterruptedException){
-                println(e.message)
-            }
-            liveDataContacts.value = contacts
+            thread.start()
         }
     }
 

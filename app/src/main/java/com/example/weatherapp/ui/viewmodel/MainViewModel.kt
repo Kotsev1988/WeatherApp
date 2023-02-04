@@ -7,6 +7,7 @@ import android.location.Geocoder
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.*
 import com.example.weatherapp.App
@@ -123,30 +124,39 @@ class MainViewModel(
 
      fun getWeather(isRus: Boolean) = getDataFromService(isRus)
 
+
      fun getDataFromService(isRus: Boolean) {
+         val handler = Handler()
+         Thread{
+             val allCities = addRepository.getAll()
 
-         if (addRepository.getAll().isEmpty()){
-             repository.getListOfRussianCities().forEach {
-                 addRepository.addCity(it)
+             if (allCities.isEmpty()){
+                 repository.getListOfRussianCities().forEach {
+                     addRepository.addCity(it)
+                 }
+
+                 repository.getListOfWorldCities().forEach {
+                     addRepository.addCity(it)
+                 }
+
              }
 
-             repository.getListOfWorldCities().forEach {
-                 addRepository.addCity(it)
+             citiesList = when (isRus) {
+                 true -> {
+                     addRepository.getListOfRussianCities()
+                 }
+
+                 false -> {
+                     addRepository.getListOfWorldCities()
+                 }
+             }
+             handler.post {
+                 liveDataListCities.value = citiesList
              }
 
-         }
+             repository.getWeatherFromServer(citiesList[0].cityName, callBack)
+         }.start()
 
-        citiesList = when (isRus) {
-            true -> {
-                addRepository.getListOfRussianCities()
-
-            }
-            false -> {
-                addRepository.getListOfWorldCities()
-            }
-        }
-         liveDataListCities.value = citiesList
-        repository.getWeatherFromServer(citiesList[0].cityName, callBack)
     }
 
     fun updateCitites(){

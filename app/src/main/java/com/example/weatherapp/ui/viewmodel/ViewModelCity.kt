@@ -95,6 +95,9 @@ class ViewModelCity(
     }
 
     fun saveCityToDB(weather: Weather) {
-        historyRepository.saveEntity(weather)
+        Thread{
+            historyRepository.saveEntity(weather)
+        }.start()
+
     }
 }

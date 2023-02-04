@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.example.weatherapp.MyReceiver
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentWeatherBinding
 import com.example.weatherapp.domain.model.*
@@ -31,14 +30,11 @@ import kotlinx.android.synthetic.main.fragment_weather.*
 
 private const val IS_WORLD_KEY = "LIST_OF_TOWNS_KEY"
 const val REQUEST_CODE = 30
-private const val REFRESH_PERIOD = 60000L
-private const val MINIMAL_DISTANCE = 100f
 
 private const val PROCESS_ERROR = "Обработка ошибки"
 const val INTENT_FILTER = "INTENT_FILTER"
 
 const val PUT_CITY_EXTRA = "CITY_NAME"
-
 
 class WeatherFragment : Fragment(R.layout.fragment_weather) {
 

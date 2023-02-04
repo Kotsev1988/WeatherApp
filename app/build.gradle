@@ -20,11 +20,40 @@ android {
 
     }
 
+    signingConfigs{
+        release{
+
+            Properties propertiesKey = new Properties()
+            propertiesKey.load(project.rootProject.file("key.properties").newDataInputStream())
+            def store_password = propertiesKey.getProperty("STORE_PASSWORD", "")
+            def key_password = propertiesKey.getProperty("KEY_PASSWORD", "")
+            def key_alias = propertiesKey.getProperty("KEY_ALIAS", "")
+
+            storeFile file("keystore.jks")
+            storePassword store_password
+            keyAlias key_alias
+            keyPassword key_password
+        }
+    }
+
     buildTypes {
+
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+        beta {
+            initWith debug
+            versionNameSuffix "-beta"
+        }
+
+
+        debug {
+            versionNameSuffix "-debug"
+        }
+
     }
 
     buildTypes.each {
@@ -47,6 +76,17 @@ android {
     }
     dataBinding {
         enabled = true
+    }
+    flavorDimensions 'version'
+    productFlavors {
+        freeConfig {
+            dimension 'version'
+            versionNameSuffix '.free'
+        }
+        paidConfig {
+            dimension 'version'
+            versionNameSuffix '.paid'
+        }
     }
 }
 

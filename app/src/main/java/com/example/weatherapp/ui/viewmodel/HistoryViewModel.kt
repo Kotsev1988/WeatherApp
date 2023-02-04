@@ -1,6 +1,7 @@
 package com.example.weatherapp.ui.viewmodel
 
 
+import android.os.Handler
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.weatherapp.App
@@ -14,13 +15,25 @@ class HistoryViewModel(
 ): ViewModel() {
 
     fun getAllHistory(){
-        historyLiveData.value = AppStateHistory.Loading
-        historyLiveData.value = AppStateHistory.Success(historyRepository.getAllHistory())
+        val handler = Handler()
+        Thread{
+            val listOfWeather = historyRepository.getAllHistory()
+
+            handler.post{
+                historyLiveData.value = AppStateHistory.Loading
+                historyLiveData.value = AppStateHistory.Success(listOfWeather)
+            }
+        }.start()
     }
 
     fun getFilterData(newText: String) {
-        historyLiveData.value = AppStateHistory.Success(historyRepository.getFilterData(newText))
-
+        val handler = Handler()
+        Thread{
+            val filter = historyRepository.getFilterData(newText)
+            handler.post {
+                historyLiveData.value = AppStateHistory.Success(filter)
+            }
+        }.start()
     }
 
 }

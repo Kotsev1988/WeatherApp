@@ -1,14 +1,11 @@
 package com.example.weatherapp.ui
 
-import android.content.IntentFilter
-import android.net.ConnectivityManager
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.weatherapp.R
-import com.example.weatherapp.domain.model.Cities
 import com.example.weatherapp.ui.addcity.AddCityFragment
 import com.example.weatherapp.ui.get_contacts.GetContactsFragment
 import com.example.weatherapp.ui.history.HistoryFragment
@@ -18,6 +15,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
 //        println("OnCreate Activity")
 //        val city = intent.getStringExtra("city")
 //        if (intent != null) {

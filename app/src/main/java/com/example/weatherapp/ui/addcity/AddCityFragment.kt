@@ -25,7 +25,7 @@ class AddCityFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         _binding = FragmentAddCityBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -34,7 +34,10 @@ class AddCityFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.adding.setOnClickListener {
-            repository.addCity(Cities(binding.addCity.text.toString(), binding.isRussain.isChecked))
+            Thread{
+                repository.addCity(Cities(binding.addCity.text.toString(), binding.isRussain.isChecked))
+            }.start()
+
 
             activity?.supportFragmentManager?.popBackStack()
         }

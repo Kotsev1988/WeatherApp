@@ -1,13 +1,9 @@
 package com.example.weatherapp.ui.get_contacts
 
 import android.Manifest
-import android.content.ContentResolver
-import android.content.Context
+
 import android.content.pm.PackageManager
-import android.database.Cursor
-import android.net.Uri
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +12,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.loader.content.CursorLoader
 import com.example.weatherapp.databinding.FragmentGetContactsBinding
 import com.example.weatherapp.ui.viewmodel.GetContactsViewModel
-import com.example.weatherapp.ui.viewmodel.MainViewModel
 
 const val REQUEST_CODE = 20
 
@@ -38,6 +32,7 @@ class GetContactsFragment : Fragment() {
 
     private val adapter: ContactsAdapter = ContactsAdapter(object : OnItemClickListener {
         override fun onItemClick(contact: String) {
+
             val number = viewModel.getPhoneNumber(contact)
             makeCallToContact(contact, number)
         }

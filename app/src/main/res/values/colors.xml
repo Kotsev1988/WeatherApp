@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="fragmentBackground">#FFFFFF</color>
+    <color name="back_for_free_version">#E9F195</color>
 </resources>

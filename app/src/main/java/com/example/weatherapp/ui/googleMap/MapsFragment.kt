@@ -49,7 +49,7 @@ class MapsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         _binding = FragmentMapBinding.inflate(inflater, container,
             false)
         return binding.root
@@ -117,7 +117,7 @@ class MapsFragment : Fragment() {
                     appState.addresses[0].latitude,
                     appState.addresses[0].longitude
                 )
-                binding.textAddress?.let {
+                binding.textAddress.let {
 
                     goToAddress(appState.addresses, it, appState.searchText +
                             " Температура " + appState.weather?.current?.temp_c)

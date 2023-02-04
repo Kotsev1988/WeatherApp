@@ -56,7 +56,7 @@
             android:text="подробнее"
             android:textColor="@color/black"
             android:textStyle="bold"
-            app:icon="@drawable/ic_details"
+            app:icon="@drawable/ic_details_foreground"
             app:iconGravity="textStart"
             app:iconPadding="@dimen/iconPadding"
             app:iconTint="@color/black"

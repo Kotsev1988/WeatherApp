@@ -30,7 +30,6 @@ class App : Application() {
                             appInstance!!.applicationContext,
                             HistoryDataBase::class.java,
                             DB_NAME)
-                            .allowMainThreadQueries()
                             .build()
                     }
                 }
@@ -39,6 +38,7 @@ class App : Application() {
         }
 
         fun getCitiesDao(): AddCityDao {
+
             if (db == null) {
                 synchronized(HistoryDataBase::class.java) {
                     if (db == null) {
@@ -48,7 +48,6 @@ class App : Application() {
                             appInstance!!.applicationContext,
                             HistoryDataBase::class.java,
                             DB_NAME)
-                            .allowMainThreadQueries()
                             .build()
                     }
                 }
